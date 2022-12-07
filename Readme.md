@@ -6,6 +6,10 @@
 
     source patient_env/bin/activate
 
+3. After activating the virtual environment To install dependencies use below command
+
+    pip install -r requirement.txt
+
 3. After activating the virtual environment run the django project, daphne and celery
 
     1.Execute django project using daphne

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+
+<h2>Bulk Upload Details<button style="float: right;padding: 5px;"><a href="/bulk_upload/">Bulk Upload</a></button>
+  <button style="float: right;padding: 5px;"><a href="/">Patients</a></button>
+</h2>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Total Count</th>
+    <th>Total Created</th>
+    <th>Total Failed</th>
+  </tr>
+  {% for i in data %}
+  <tr class="{{i.id}}">
+      <td>
+          {{i.id}}
+      </td>
+      <td>
+          Bulk Upload
+      </td>
+      <td class="status">
+         {{i.status}}
+      </td>
+      <td>
+          {{i.total_records}}
+      </td>
+      <td class="total_created">
+          {{i.total_created}}
+      </td>
+      <td class="total_errors">
+          {{i.total_errors}} {% if i.file_name %}<a href="/media/{{i.file_name }}/">Download</a>{% endif %}
+      </td>
+  </tr>
+  {% endfor %}
+</table>
+</body>
+<script>
+  var incompleted_task_count = '{{incompleted_task_count}}'
+
+  // ws = new WebSocket('ws://localhost:8001/')
+  let chatSocket = null;
+
+  function connect() {
+    chatSocket = new WebSocket("ws://localhost:8002/notifications/");
+
+    chatSocket.onopen = function(e) {
+        console.log("Successfully connected to the WebSocket.");
+    }
+
+    chatSocket.onclose = function(e) {
+        console.log("WebSocket connection closed ..");
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data);
+        if(data['instance_status'] == 'completed'){
+          incompleted_task_count = incompleted_task_count - 1
+        }
+        console.log("-------incompleted_task_count--------",incompleted_task_count)
+        var instance_id = data['instance_id']
+        if($("."+instance_id).length){
+          $("."+instance_id).find('.status').html(data['instance_status'])
+          $("."+instance_id).find('.total_created').html(data['total_created'])
+          $("."+instance_id).find('.total_errors').html(data['total_errors'])
+          if(data['total_errors']>0){
+            var link_src = '/media/'+data['file_name']+'/'
+            $("."+instance_id).find('.total_errors').append("<a href="+link_src+">Download</a>")
+          }
+        }
+        if(incompleted_task_count == 0){
+            chatSocket.close();
+        }
+      };
+
+      chatSocket.onerror = function(err) {
+          console.log("WebSocket encountered an error: " + err.message);
+          console.log("Closing the socket.");
+          chatSocket.close();
+      }
+    }
+
+    if (incompleted_task_count > 0){
+      connect();
+    }
+</script>
+</html>
+

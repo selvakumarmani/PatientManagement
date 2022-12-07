@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+</head>
+<body>
+
+<h2>File upload<button style="float: right;padding: 5px;"><a href="/bulk_upload_list/">Bulk Upload List</a></button>
+  <button style="float: right;padding: 5px;"><a href="/">Patients</a></button>
+</h2>
+<table>
+  <tr>
+    <td>
+      <form id="file_upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" id="file_element" accept=".csv" required/>
+        <br />
+        <br />
+        <input type="submit" value="Upload File" />
+      </form>
+    </td>
+  </tr>
+</table>
+</body>
+<script>
+   jQuery.validator.addMethod("extension", function (value, element, param) {
+        param = typeof param === "string" ? param.replace(/,/g, '|') : "png|jpe?g|gif";
+        return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+    }, jQuery.format("Please enter a value with a valid extension."));
+    $(document).ready(function () {
+        $('#file_upload').validate({
+                rules: {
+                  file: {
+                      required: true,
+                  }
+                },
+                messages: {
+                  file: {
+                    required:'This field is required',
+                    extension: "Please upload csv file"
+                  }
+                },
+                submitHandler: function(form) {
+                  form.submit();
+                }
+        });
+    });
+</script>
+</html>
+

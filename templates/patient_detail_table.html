@@ -1,0 +1,42 @@
+<table>
+<tr>
+    <th>Patient ID</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>DOB</th>
+    <th>Insurance Eligibility</th>
+</tr>
+{% for patient in patients %}
+<tr>
+    <td>{{patient.patient_id}}</td>
+    <td>{{patient.first_name}}</td>
+    <td>{{patient.last_name}}</td>
+    <td>{{patient.email}}</td>
+    <td>{{patient.dob}}</td>
+    <td>{{patient.insurance_eligibility}}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+{% if patients.has_other_pages %}
+    <ul class="pagination">
+        {% if patients.has_previous %}
+            <li class="waves-effect" onclick="patient_load('{{ patients.previous_page_number }}')"><a href="javascript:void(0)"><i
+                    class="material-icons"> << </i></a></li>
+        {% endif %}
+        {% for num in patients.paginator.page_range %}
+            {% if patients.number == num %}
+                <li class="active" onclick="patient_load('{{ num }}')"><a href="javascript:void(0)">{{ num }}</a></li>
+            {% else %}
+                <li class="waves-effect" onclick="patient_load('{{ num }}')"><a
+                        href="javascript:void(0)">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if patients.has_next %}
+            <li class="waves-effect" onclick="patient_load('{{ patients.next_page_number }}')"><a
+                    href="javascript:void(0)"><i
+                    class="material-icons">>></i></a></li>
+        {% endif %}
+    </ul>
+{% endif %}

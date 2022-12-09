@@ -10,7 +10,7 @@
 
     pip install -r requirement.txt
 
-3. After activating the virtual environment run the django project, daphne and celery
+4. After activating the virtual environment run the django project, daphne and celery
 
     1.Execute django project using daphne
 
@@ -21,6 +21,8 @@
         python -m celery -A PatientManagement worker
 
     3.For run the django project
+
+        python manage.py migrate
 
         python manage.py runserver
 
